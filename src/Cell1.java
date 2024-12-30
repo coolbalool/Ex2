@@ -34,10 +34,10 @@
 
             String validNum = "0123456789-."; // all the valid num characters
             String validOp = "*+/-"; // all the valid operation character
-            String validChars = validNum + validOp + "()";
+            String validChars = validNum + validOp + "()"; // all the valid characters
 
-            int parCount = 0; // for checking if the ( ) are valid
-            boolean dotSeen = false;
+            int parCount = 0; // for checking if the ( ) are valid (the amount of open parenthesis)
+            boolean dotSeen = false; // for ensuring no double dots in a number
             boolean lastWasOp = false;
             boolean lastWasNum = false;
 
@@ -46,48 +46,47 @@
                 char ch = text.charAt(i);
                 if (validChars.indexOf(ch) == -1) return false; // checks if all the chars are valid
 
-                // parenthesis check
                 if (ch == '(')
                 {
-                    if (lastWasNum) return false;
-                    parCount++;
-                    dotSeen = false;
-                    lastWasNum = false;
-                    lastWasOp = false;
+                    if (lastWasNum) return false; // cant be a number before '('
+                    parCount++;  // for validation of the parenthesis
+                    dotSeen = false; // resets the dot flag
+                    lastWasNum = false; // '(' isn't a num
+                    lastWasOp = false; // '(' isn't an operator
                 }
                 else if (ch == ')')
                 {
-                    parCount--;
+                    parCount--; // reduces the count of the open parenthesis
                     dotSeen = false;
-                    if (parCount < 0 || lastWasOp) return false;
-                    lastWasNum = false;
-                    lastWasOp = false;
+                    if (parCount < 0 || lastWasOp) return false; // if there are more ')' than '(' it isn't a form or operator before ')' is invalid
+                    lastWasNum = false; // ')' isn't an num
+                    lastWasOp = false;// ')' isn't an operator
                 }
 
-                else if (validOp.indexOf(ch) != -1)
+                else if (validOp.indexOf(ch) != -1) // ch is an operator
                 {
-                    if ((i == 1 && ch != '-') || lastWasOp) return false;
-                    dotSeen = false;
+                    if ((i == 1 && ch != '-') || lastWasOp) return false; // if last char is op or is it the first number (except '-')
+                    dotSeen = false; // resets dot flag
                     lastWasOp = true;
-                    lastWasNum = false;
+                    lastWasNum = false; // resets num flag
 
                 }
 
                 else if (ch == '.')
                 {
-                    if (dotSeen || !lastWasNum) return false;
+                    if (dotSeen || !lastWasNum) return false; // if there wasn't a num before or there have been more than one dot in the number return false
                     dotSeen = true;
                 }
 
-                else
+                else // all number [0,9]
                 {
-                    if ( i > 1 && text.charAt(i -1) == ')') return false;
+                    if ( i > 1 && text.charAt(i -1) == ')') return false; // if last char is ) then a num after is invalid
                     lastWasOp = false;
                     lastWasNum = true;
                 }
             }
 
-            return parCount == 0 && !lastWasOp;
+            return parCount == 0 && !lastWasOp; // if the string does not end with an op and the parenthesis are valid
 
         }
 
