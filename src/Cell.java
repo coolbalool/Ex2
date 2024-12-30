@@ -1,58 +1,41 @@
-    public class Cell {
-        int row, coll;
-        String info;
+/**
+ * ArielU. Intro2CS, Ex2: https://docs.google.com/document/d/1-18T-dj00apE4k1qmpXGOaqttxLn-Kwi/edit?usp=sharing&ouid=113711744349547563645&rtpof=true&sd=true
+ * DO NOT CHANGE THIS INTERFACE!!
+ * This interface represents a spreadsheet entry for Ex2:
+ * Each spreadsheet entry (aka a Cell) which can be:
+ * a number (Double), a String (Text), or a form, the data of each cell is represented as a String (e.g., "abc", "4.2", "=2+3*2", "=A1*(3-A2)".
+ */
+public interface Cell {
+    /**
+     * Return the input text (aka String) this cell was init by (without any computation).
+     * @return
+     */
+    String getData();
 
-        public void setInfo(String info) {
-            this.info = info;
-        }
-
-        public String getInfo() {
-            return info;
-        }
-
-        public static boolean isNumber(String text) {
-            int ch = text.charAt(0);
-            int dotCount = 0; // how many dots are in this string
-            if (ch != '-' && (ch < '0' || ch > '9') && ch != '+') // the first char is not a digit or '-' or '+'
-                return false;
-            for (int i = 1; i < text.length(); i++) {
-                ch = text.charAt(i);
-                if (ch == '.') dotCount++;
-                else if (ch < '0' || ch > '9') return false;
-            }
-            return (dotCount < 2); // true if count is 0 or 1 else false
-        }
-
-        public static boolean isText(String text) {
-            return (!isNumber(text) && (text.indexOf('=') == -1)); // if isn't a number and doesn't have '='
-        }
-
-        public static
-
-        public static boolean isForm(String text) {
-
-            if (text.charAt(0) != '=') return false;
-
-            String temp = new String(text);
-            temp = text.substring(1);
-
-            String validNum = "0123456789-."; // all the valid num characters
-            String validOp = "*+/-"; // all the valid operation character
-            String validChars = validNum + validOp + "()";
-
-            for (int i = 0; i < temp.length(); i++)
-            {
-
-            }
-
-            return true;
-
-        }
-    }
+/** Changes the underline string of this cell
+ *  */
+    void setData(String s);
 
 
+    /**
+     * Returns the type of this cell {TEXT,NUMBER, FORM, ERR_CYCLE_FORM, ERR_WRONG_FORM}
+     * @return an int value (as defined in Ex2Utils)
+     */
+    public int getType();
 
-
-
-
-    }
+    /**
+     * Changes the type of this Cell {TEXT,NUMBER, FORM, ERR_CYCLE_FORM, ERR_WRONG_FORM}
+     * @param t an int type value as defines in Ex2Utils.
+     */
+    public void setType(int t);
+    /**
+     * Computes the natural order of this entry (cell) in case of a number or a String =0, else 1+ the max of all dependent cells.
+     * @return an integer representing the "number of rounds" needed to compute this cell (using an iterative approach)..
+     */
+    public int getOrder();
+    /**
+     * Changes the order of this Cell
+     * @param t
+     */
+    public void setOrder(int t);
+}
