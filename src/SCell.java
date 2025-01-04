@@ -7,6 +7,7 @@ public class SCell implements Cell {
 
     public SCell(String s) {
         // Add your code here
+        // determin the type
         setData(s);
     }
 
@@ -25,10 +26,11 @@ public class SCell implements Cell {
     }
 
     @Override
-public void setData(String s) {
+public void setData(String s)
+    {
         // Add your code here
         line = s;
-        /////////////////////
+        // calc type
     }
     @Override
     public String getData() {
@@ -46,7 +48,8 @@ public void setData(String s) {
     }
 
     @Override
-    public void setOrder(int t) {
+    public void setOrder(int t)
+    {
         // Add your code here
 
     }

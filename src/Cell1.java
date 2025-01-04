@@ -51,7 +51,6 @@
                     if (lastWasNum) return false; // cant be a number before '('
                     parCount++;  // for validation of the parenthesis
                     dotSeen = false; // resets the dot flag
-                    lastWasNum = false; // '(' isn't a num
                     lastWasOp = false; // '(' isn't an operator
                 }
                 else if (ch == ')')
