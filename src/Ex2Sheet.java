@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Arrays;
 // Add your documentation below:
 
 public class Ex2Sheet implements Sheet {
@@ -117,26 +118,24 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public int[][] depth() {
-
         int[][] ans = new int[width()][height()];
+        for (int[] row : ans) Arrays.fill(row, -1); // Initialize to -1
 
-        // init array to -1
-        for (int i = 0; i < ans.length; i++)
-            for (int j = 0; j < ans[i].length; j++)
-                ans[i][j] = -1;
-
-        int depth = -1, count = 0, max = width() * height();
+        int depth = 0, count = 0, max = width() * height();
         boolean flagC = true;
 
-        while(count <max && flagC) {
+        while (count < max && flagC) {
             flagC = false;
-            for(int x = 0;x< width();x++) {
-                for(int y = 0;y<height();y++) {
-                    if(canBeCalc(x,y,ans)) { // DIY
-                        ans[x][y] = depth;
-                        count+=1;
-                        flagC=true; }}} // end for,for,if
-            depth+=1;
+            for (int x = 0; x < width(); x++) {
+                for (int y = 0; y < height(); y++) {
+                    if (ans[x][y] == -1 && canBeCalc(x, y, ans)) {
+                        ans[x][y] = depth;  // Set current depth
+                        count++;
+                        flagC = true;  // More cells to process
+                    }
+                }
+            }
+            depth++;  // Increment depth after completing a pass
         }
         return ans;
     }
@@ -150,7 +149,7 @@ public class Ex2Sheet implements Sheet {
         {
              c = (SCell) get(needed[i]);
             int[] cord = cordStrToInt(needed[i]);
-            if (c == null || depth[cord[0]][cord[1]] != -1) return false; // if cell invalid or the cell cant be calculated
+            if (!isIn(cord[0], cord[1]) || depth[cord[0]][cord[1]] < 0) return false; // if cell invalid or the cell cant be calculated
         }
 
         return true;
