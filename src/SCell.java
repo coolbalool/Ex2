@@ -7,6 +7,7 @@ public class SCell implements Cell {
     private int type;
     // Add your code here
 
+    // constructor set the type
     public SCell(String s)
     {
         setData(s);
@@ -23,6 +24,7 @@ public class SCell implements Cell {
         return true;
     }
 
+    // returns an array of the cells that the cell is depended on
     public String[] getDepended()
         {
             if (getType() != Ex2Utils.FORM|| getData() == null || getData().length() < 2) return new String[0]; // for invalid form

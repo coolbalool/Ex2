@@ -117,6 +117,7 @@ public class Ex2Sheet implements Sheet {
 
     @Override
     public int[][] depth() {
+
         int[][] ans = new int[width()][height()];
 
         // init array to -1
@@ -124,33 +125,32 @@ public class Ex2Sheet implements Sheet {
             for (int j = 0; j < ans[i].length; j++)
                 ans[i][j] = -1;
 
-        int depth = 0, count = 0, max = width() * height();
+        int depth = -1, count = 0, max = width() * height();
         boolean flagC = true;
 
         while(count <max && flagC) {
             flagC = false;
             for(int x = 0;x< width();x++) {
                 for(int y = 0;y<height();y++) {
-                    if(canBeCalc(x,y)) { // DIY
+                    if(canBeCalc(x,y,ans)) { // DIY
                         ans[x][y] = depth;
                         count+=1;
                         flagC=true; }}} // end for,for,if
             depth+=1;
-        } //while
+        }
         return ans;
     }
 
-    public boolean canBeCalc(int x,int y)
+    public boolean canBeCalc(int x,int y,int[][] depth)
     {
         if (!isIn(x, y)) return false;
         SCell c = (SCell)get(x,y);
         String[] needed = c.getDepended();
-        int [][] d = depth();
         for (int i = 0; i < needed.length; i++)
         {
              c = (SCell) get(needed[i]);
             int[] cord = cordStrToInt(needed[i]);
-            if (c == null || d[cord[0]][cord[1]] != -1) return false; // if cell invalid or the cell cant be calculated
+            if (c == null || depth[cord[0]][cord[1]] != -1) return false; // if cell invalid or the cell cant be calculated
         }
 
         return true;
