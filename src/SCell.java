@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class SCell implements Cell {
     private String line;
     private int type;
+    private int order;
+
     // Add your code here
 
     // constructor set the type
@@ -18,7 +20,6 @@ public class SCell implements Cell {
     {
         try {
             Double.parseDouble(getData()); // if the string cant convert to double it is not a number
-            if (getData().charAt(0) == '+') return false; // when parsing a number begin in + it will return true
         }
         catch (Exception e) { return false; }
         return true;
@@ -58,13 +59,9 @@ public class SCell implements Cell {
         }
 
 
-    @Override
-    public int getOrder() {
-        // Add your code here
-
-        return 0;
-        // ///////////////////
-    }
+   @Override
+   public int getOrder()
+   {return order;}
 
     //@Override
     @Override
@@ -82,7 +79,6 @@ public void setData(String s)
             type = Ex2Utils.NUMBER;
         else if (line.isEmpty() || line.charAt(0) != '=') type = Ex2Utils.TEXT;
         else if (isForm()) type = Ex2Utils.FORM;
-        else type = Ex2Utils.ERR_FORM_FORMAT;
     }
 
     @Override
@@ -103,8 +99,7 @@ public void setData(String s)
     @Override
     public void setOrder(int t)
     {
-        // Add your code here
-
+        this.order = t;
     }
 
     public boolean isForm()
@@ -135,7 +130,11 @@ public void setData(String s)
                         continue;
                     }
                 }
-                if (lastWasNum) return false; // A number cannot directly precede a letter
+                if (lastWasNum)
+                {
+                    setType(Ex2Utils.ERR_FORM_FORMAT);
+                    return false; // A number cannot directly precede a letter
+                }
                 int j = i;
                 while (j < getData().length() && Character.isAlphabetic(getData().charAt(j))) j++; // Skip letters
                 while (j < getData().length() && Character.isDigit(getData().charAt(j))) j++; // Skip digits
@@ -146,7 +145,11 @@ public void setData(String s)
 
             else if (ch == '(')
             {
-                if (lastWasNum) return false; // cant be a number before '('
+                if (lastWasNum)
+                {
+                    setType(Ex2Utils.ERR_FORM_FORMAT);
+                    return false;  // cant be a number before '('
+                }
                 parCount++;  // for validation of the parenthesis
                 dotSeen = false; // resets the dot flag
                 lastWasOp = false; // '(' isn't an operator
@@ -155,13 +158,21 @@ public void setData(String s)
             {
                 parCount--; // reduces the count of the open parenthesis
                 dotSeen = false;
-                if (parCount < 0 || lastWasOp) return false; // if there are more ')' than '(' it isn't a form or operator before ')' is invalid
+                if (parCount < 0 || lastWasOp)
+                {
+                    setType(Ex2Utils.ERR_FORM_FORMAT);
+                    return false; // if there are more ')' than '(' it isn't a form or operator before ')' is invalid
+                }
                 lastWasNum = false; // ')' isn't an num
             }
 
             else if (validOp.indexOf(ch) != -1) // ch is an operator
             {
-                if ((i == 1 && ch != '-') || lastWasOp) return false; // if last char is op or is it the first number (except '-')
+                if ((i == 1 && ch != '-') || lastWasOp)
+                {
+                    setType(Ex2Utils.ERR_FORM_FORMAT);
+                    return false; // if last char is op or is it the first number (except '-')
+                }
                 dotSeen = false; // resets dot flag
                 lastWasOp = true;
                 lastWasNum = false; // resets num flag
@@ -170,18 +181,25 @@ public void setData(String s)
 
             else if (ch == '.')
             {
-                if (dotSeen || !lastWasNum) return false; // if there wasn't a num before or there have been more than one dot in the number return false
+                if (dotSeen || !lastWasNum)
+                {
+                    setType(Ex2Utils.ERR_FORM_FORMAT);
+                    return false;  // if there wasn't a num before or there have been more than one dot in the number return false
+                }
                 dotSeen = true;
             }
 
             else // all number [0,9]
             {
-                if ( i > 1 && getData().charAt(i -1) == ')') return false; // if last char is ) then a num after is invalid
+                if ( i > 1 && getData().charAt(i -1) == ')')
+                {
+                    setType(Ex2Utils.ERR_FORM_FORMAT);
+                    return false;   // if last char is ) then a num after is invalid
+                }
                 lastWasOp = false;
                 lastWasNum = true;
             }
         }
-
         return parCount == 0 && !lastWasOp; // if the string does not end with an op and the parenthesis are valid
 
     }

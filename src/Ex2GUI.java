@@ -25,6 +25,21 @@ public class Ex2GUI {
 		testSimpleGUI(table);
 	}
 
+	// this method is only used by the test and sets the table
+	public static void setTable(Ex2Sheet sheet)
+	{
+		table = sheet;
+	}
+
+
+	// this methode returns the table of gui (only one table - static) for Cell getOrder
+	public static Sheet getTable()
+	{
+		if(table == null)
+			return new Ex2Sheet(Ex2Utils.WIDTH, Ex2Utils.HEIGHT);
+		return table;
+	}
+
 	/**
 	 * This function runs the main (endlees) loop of the GUI
 	 * @param table the SpreadSheet - note: this class is written as a naive implementation of "singleton" (i.e., all static).
@@ -143,4 +158,6 @@ public class Ex2GUI {
 			StdDrawEx2.resetXY();
 		}
 	}
+
+
 }

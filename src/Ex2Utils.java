@@ -16,6 +16,39 @@ public class Ex2Utils {
     public static final String EMPTY_CELL = "";
     public static  final String[] ABC= {"A","B","C","D","E","F","G","H","I","J","K","L","O","M","N","P","Q","R","S","T","U","V","W","X","Y","Z"};
 
+    // from cords "B14" to [2,14] array invalid cord result in [-1,-1]
+    public static int[] cordStrToInt(String cords) {
+        int[] result = {-1, -1};
+        if (cords.length() <= 1) return result;
+        char ch = Character.toUpperCase(cords.charAt(0));
+        if (!Character.isAlphabetic(ch)) return result; // if the char is between [A-Z] else default
+        result[0] = ch - 'A';//x is the value of the char in alphabetic order
+        try {
+            String temp = cords.substring(1);
+            result[1] = Integer.parseUnsignedInt(temp); // x cord is a natural number (unsigned int)
+            if (temp.charAt(0) == '+')
+                return new int[]{-1, -1};// parseUnsignedInt returns true is the string starts with '+'
+        } catch (Exception e) {
+            return new int[]{-1, -1};
+        }
+
+        return result;
+    }
+
+    public static String cordToStr(int row, int col) {
+        if (row < 0 || col < 0 || col >= 26) return null; // Invalid input
+
+        // Convert column index to a single character (e.g., 0 -> 'A', 1 -> 'B', ..., 25 -> 'Z')
+        char columnChar = (char) ('A' + col);
+
+        // Convert row index to 1-based row number
+        int rowNumber = row + 1;
+
+        // Combine column character and row number
+        return columnChar + String.valueOf(rowNumber);
+    }
+
+
     // ****** not implemented in Ex2!! ******
     // public static final String[] FUNCTIONS = {"if", "sin", "cos", "pow", "min", "max"};
     // public static String[] B_OPS = {"<", ">", "==","!=", "<=", ">="};

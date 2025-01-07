@@ -1,5 +1,6 @@
 import org.junit.Test;
 import static org.junit.Assert.*;
+import java.util.ArrayList;
 
 public class TestSCell {
 
@@ -29,12 +30,22 @@ public class TestSCell {
         assertFalse(invalidScientificNotationCell.isNumber());
         assertTrue(negativeExponentCell.isNumber());
 
+        assertTrue(new SCell("123").isNumber());
+        assertTrue(new SCell("45.67").isNumber());
+        assertTrue(new SCell("-89.01").isNumber());
+        assertTrue(new SCell("2e2").isNumber()); // Scientific notation
+        assertTrue(new SCell("-1.23e-4").isNumber());
+        assertFalse(new SCell("NotANumber").isNumber());
+        assertFalse(new SCell("").isNumber());
+        assertFalse(new SCell("1.23e").isNumber()); // Invalid scientific notation
+
     }
 
     @Test
     public void testIsForm() {
         // Valid formulas
         assertTrue(new SCell("=A1+B2").isForm());
+        assertTrue(new SCell("=B1").isForm());
         assertTrue(new SCell("=1+2").isForm());
         assertTrue(new SCell("=(3*4)-5").isForm());
         assertTrue(new SCell("=(A1+B2)*(C3-D24)").isForm());
@@ -76,6 +87,15 @@ public class TestSCell {
         assertFalse(new SCell("=(1+2)*-").isForm());  // Operator at the end
         assertFalse(new SCell("=1..2+3").isForm());  // Double dot in number
         assertFalse(new SCell("=A1+(B24))").isForm());  // Extra closing p
+        assertTrue(new SCell("=A1+B2").isForm());
+        assertTrue(new SCell("=(1+2)*(3-4)/5").isForm());
+        assertTrue(new SCell("=((1+2)*3)-4").isForm());
+        assertTrue(new SCell("=(A1+B2)*(C3-(D24/E56))").isForm());
+        assertFalse(new SCell("").isForm());  // Empty input
+        assertFalse(new SCell("Hello").isForm());  // Non-formula text
+        assertFalse(new SCell("=A1+").isForm());  // Ends with operator
+        assertFalse(new SCell("=(A1+B2").isForm());  // Unbalanced parentheses
+        assertFalse(new SCell("=1..2+3").isForm());  // Double dot in number
     }
 
     @Test
@@ -92,6 +112,13 @@ public class TestSCell {
         SCell textCell = new SCell("Hello"); // Non-formula text
         SCell invalidFormulaCell = new SCell("=+1A"); // Malformed formula
         SCell nestedFormulaCell = new SCell("=A1+B2+(C3+D4)");
+
+        assertArrayEquals(new String[]{"A1", "B2"}, new SCell("=A1+B2").getDepended());
+        assertArrayEquals(new String[]{"A1", "C3"}, new SCell("=1+A1*C3").getDepended());
+        assertArrayEquals(new String[]{}, new SCell("123").getDepended());  // Not a formula
+        assertArrayEquals(new String[]{}, new SCell("").getDepended());  // Empty input
+        assertArrayEquals(new String[]{}, new SCell("Hello").getDepended());  // Non-formula text
+        assertArrayEquals(new String[]{"A1", "B2", "C3", "D4"}, new SCell("=A1+B2+(C3+D4)").getDepended());
 
         assertArrayEquals(new String[]{}, emptyCell.getDepended());
         assertArrayEquals(new String[]{}, textCell.getDepended());
