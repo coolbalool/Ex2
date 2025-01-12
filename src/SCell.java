@@ -26,37 +26,48 @@ public class SCell implements Cell {
     }
 
     // returns an array of the cells that the cell is depended on
-    public String[] getDepended()
-        {
-            if (getType() != Ex2Utils.FORM|| getData() == null || getData().length() < 2) return new String[0]; // for invalid form
-            ArrayList<String> arr = new ArrayList<String>(); // dynamic array because we don't know how much cell it depends on
+    public String[] getDepended() {
+        // Return empty array if not a formula or invalid input
+        if (getType() != Ex2Utils.FORM || getData() == null || getData().length() < 2) {
+            return new String[0];
+        }
 
-            StringBuilder curr = new StringBuilder();
-            boolean flag = false;
-            for (int i = 1; i < getData().length(); i++)// start from 1 to remove '='
-            {
-                char ch = getData().charAt(i);
-                if ((ch == 'e' || ch =='E') && i > 1 && Character.isDigit(getData().charAt(i - 1)))
-                continue;// scientific notation}
-                if (Character.isAlphabetic(ch))
-                {
-                    flag = true;
-                    curr.setLength(0); // resets the string builder
-                    curr.append(ch);
-                }
-                else if (Character.isDigit(ch) && flag) curr.append(ch); // the digit
+        ArrayList<String> dependencies = new ArrayList<>();
+        StringBuilder currentRef = new StringBuilder();
 
-                else if (flag)
-                {
-                    flag = false; // reset flag
-                    arr.add(curr.toString()); // add str to the result array
-                }
+        // Start from index 1 to skip the '=' sign
+        for (int i = 1; i < getData().length(); i++) {
+            char ch = getData().charAt(i);
+
+            // Handle scientific notation (e.g., 1.5E-2)
+            if ((ch == 'e' || ch == 'E') && i > 1 && Character.isDigit(getData().charAt(i - 1))) {
+                continue;
             }
 
-            if (flag) arr.add(curr.toString());
+            // Start of cell reference (must be uppercase letter)
+            if (Character.isUpperCase(ch)) {
+                currentRef.setLength(0);  // Reset StringBuilder
+                currentRef.append(ch);
 
-            return arr.toArray(new String[arr.size()]);
+                // Look ahead to collect the full reference (letter + numbers)
+                i++;
+                while (i < getData().length() && Character.isDigit(getData().charAt(i))) {
+                    currentRef.append(getData().charAt(i));
+                    i++;
+                }
+                i--; // Adjust index since for loop will increment
+
+                // Validate and add the reference
+                String ref = currentRef.toString();
+                int[] coords = Ex2Utils.cordStrToInt(ref);
+                if (coords[0] != -1 && coords[1] != -1) {  // Valid coordinates
+                    dependencies.add(ref);
+                }
+            }
         }
+
+        return dependencies.toArray(new String[0]);
+    }
 
 
    @Override
@@ -79,11 +90,14 @@ public void setData(String s)
             type = Ex2Utils.NUMBER;
         else if (line.isEmpty() || line.charAt(0) != '=') type = Ex2Utils.TEXT;
         else if (isForm()) type = Ex2Utils.FORM;
+        else type = Ex2Utils.ERR_FORM_FORMAT;
     }
 
     @Override
     public String getData() {
+        if (getType() == Ex2Utils.TEXT)
         return line;
+        else return line.replaceAll("\\s", "");
     }
 
     @Override
@@ -113,7 +127,6 @@ public void setData(String s)
 
         int parCount = 0; // for checking if the ( ) are valid (the amount of open parenthesis)
         boolean dotSeen = false; // for ensuring no double dots in a number
-        boolean eSeen = false; // for 'e' of scientific notation
         boolean lastWasOp = false;
         boolean lastWasNum = false;
 
@@ -168,6 +181,9 @@ public void setData(String s)
 
             else if (validOp.indexOf(ch) != -1) // ch is an operator
             {
+
+
+
                 if ((i == 1 && ch != '-') || lastWasOp)
                 {
                     setType(Ex2Utils.ERR_FORM_FORMAT);
